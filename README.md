@@ -183,5 +183,3 @@ This README includes:
 - ✅ Technology stack details
 - ✅ Contributing guidelines
 - ✅ Live demo link
-
-You can customize the repository name, username, and any specific details to match your actual setup!
