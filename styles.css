@@ -1,0 +1,137 @@
+#ai-chat-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+}
+
+#ai-chat-sidebar.active {
+    right: 0;
+}
+
+.sidebar-header {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+#close-sidebar {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.api-keys {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.api-keys input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#save-keys {
+    width: 100%;
+    padding: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.model-selector {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#model-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+#chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    max-width: 80%;
+}
+
+.user-message {
+    background-color: #e3f2fd;
+    margin-left: auto;
+}
+
+.ai-message {
+    background-color: #f5f5f5;
+    margin-right: auto;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    margin-right: auto;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+#user-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    height: 40px;
+}
+
+#send-message {
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#send-message:hover {
+    background-color: #1976D2;
+} 

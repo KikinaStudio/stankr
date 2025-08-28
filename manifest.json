@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "AI Chat Sidebar",
+  "version": "1.0",
+  "description": "Chat with multiple AI models in a sidebar",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "action": {
+    "default_title": "AI Chat Sidebar"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+} 

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facial Expression Music Player</title>
+    <!-- Face API - using the original CDN source with version parameter to prevent caching -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js?v=1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@0.0.6"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .controls {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .track-control {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .effect-buttons {
+            margin-top: 10px;
+        }
+        .sensor-section {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        #cameraContainer {
+            position: relative;
+            width: 320px;
+            height: 240px;
+            margin: 15px auto;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        #expressionStatus {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #debugInfo {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .note {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Facial Expression Music Player</h1>
+    
+    <!-- Facial Expression Detector section moved to body -->
+    <div class="sensor-section">
+        <h2>Facial Expression Detector</h2>
+        <button id="enableCamera">Enable Face Detection</button>
+        <button id="closeCamera" style="background-color: #f44336; color: white; display: none;">Close Camera</button>
+        <div class="note">
+            Note: If using HTTP, you may need to allow camera access in your browser settings.
+        </div>
+        <div id="cameraContainer" style="display:none;">
+            <!-- Video is now visible but positioned under the canvas -->
+            <video id="video" width="320" height="240" autoplay playsinline></video>
+            <canvas id="canvas" width="320" height="240"></canvas>
+            <div id="expressionStatus">No expression detected</div>
+        </div>
+        <!-- Debug info section for troubleshooting -->
+        <div id="debugInfo" style="display:none;">
+            Model status: Waiting for initialization<br>
+            Camera status: Not started
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="playButton">Play</button>
+        <button id="stopButton">Stop</button>
+    </div>
+    
+    <div id="trackControls">
+        <!-- Track controls will be added here by JavaScript -->
+    </div>
+    
+    <script src="script.js?v=4"></script>
+</body>
+</html>
