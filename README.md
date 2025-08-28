@@ -1,5 +1,3 @@
-Here's a professional README.md for your GitHub repository:
-
 ```markdown
 # 🎵 K.Lab : Face the Music
 
