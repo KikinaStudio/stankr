@@ -2057,86 +2057,83 @@ async function initPoseDetection() {
     }
 }
 
-// Dans la fonction detectPose, ajoutons le dessin des points de pose
+// Optimized pose detection function
 async function detectPose() {
     if (!isPoseDetectionActive || !poseDetector || !video || video.readyState < 2) return;
 
     try {
-        // Créer un élément canvas temporaire pour la détection de pose
+        // Clear canvas to prevent ghosting
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Use smaller resolution for better performance
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = video.width;
-        tempCanvas.height = video.height;
+        tempCanvas.width = 160; // Much smaller for performance
+        tempCanvas.height = 120;
         const tempContext = tempCanvas.getContext('2d');
+        
+        // Draw video frame to temp canvas
         tempContext.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
 
-        // Utiliser l'image du canvas temporaire pour la détection de pose
+        // Detect poses on smaller canvas
         const poses = await poseDetector.estimatePoses(tempCanvas);
         
-        // Dessiner sur le canvas principal
         if (poses.length > 0) {
             const pose = poses[0];
+            const scaleX = canvas.width / tempCanvas.width;
+            const scaleY = canvas.height / tempCanvas.height;
             
-            // Dessiner tous les points de pose
-            pose.keypoints.forEach(keypoint => {
-                if (keypoint.score > 0.3) {
-                    context.beginPath();
-                    context.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
-                    context.fillStyle = '#00ff00';
-                    context.fill();
-                }
-            });
-            
+            // Only draw key points we need (right arm)
             const rightWrist = pose.keypoints.find(kp => kp.name === 'right_wrist');
             const rightShoulder = pose.keypoints.find(kp => kp.name === 'right_shoulder');
             
             if (rightWrist && rightShoulder && rightWrist.score > 0.3 && rightShoulder.score > 0.3) {
-                // Dessiner une ligne entre l'épaule et le poignet
+                // Draw only the points we need
+                [rightWrist, rightShoulder].forEach(keypoint => {
+                    context.beginPath();
+                    context.arc(keypoint.x * scaleX, keypoint.y * scaleY, 4, 0, 2 * Math.PI);
+                    context.fillStyle = '#00ff00';
+                    context.fill();
+                });
+                
+                // Draw line between shoulder and wrist
                 context.beginPath();
-                context.moveTo(rightShoulder.x, rightShoulder.y);
-                context.lineTo(rightWrist.x, rightWrist.y);
+                context.moveTo(rightShoulder.x * scaleX, rightShoulder.y * scaleY);
+                context.lineTo(rightWrist.x * scaleX, rightWrist.y * scaleY);
                 context.strokeStyle = '#00ff00';
                 context.lineWidth = 2;
                 context.stroke();
                 
-                // Calculer la position relative du poignet par rapport à l'épaule
-                const relativePosition = (rightShoulder.y - rightWrist.y) / video.height;
-                
-                // Mettre à jour le volume global (0 à 1)
+                // Calculate volume
+                const relativePosition = (rightShoulder.y - rightWrist.y) / tempCanvas.height;
                 globalVolume = Math.max(0, Math.min(1, 1 - relativePosition));
                 
-                // Afficher le volume actuel sur le canvas
-                context.fillStyle = '#ffffff';
-                context.fillRect(10, 10, 100, 30);
+                // Simple volume display
+                context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                context.fillRect(10, 10, 80, 25);
                 context.fillStyle = '#000000';
                 context.font = '12px Arial';
-                context.fillText(`Volume: ${Math.round(globalVolume * 100)}%`, 15, 30);
+                context.fillText(`Vol: ${Math.round(globalVolume * 100)}%`, 15, 25);
                 
-                // Appliquer le volume à toutes les pistes
+                // Apply volume to tracks
                 Object.values(tracks).forEach(track => {
                     if (track.gainNode) {
-                        // Check if the volume slider exists before accessing its value
                         const volumeSlider = document.getElementById(`volume-slider-${track.name}`);
                         if (volumeSlider) {
                             const baseVolume = parseInt(volumeSlider.value) / 100;
                             track.gainNode.gain.value = baseVolume * globalVolume;
                         } else {
-                            // If slider doesn't exist, use default volume
                             track.gainNode.gain.value = globalVolume;
                         }
                     }
                 });
                 
-                // Mettre à jour l'indicateur visuel
                 updateVolumeIndicator(globalVolume);
             }
         }
     } catch (error) {
         console.error("Erreur lors de la détection de pose:", error);
-        updateDebugInfo(`Erreur de détection de pose: ${error.message}`);
+        // Don't spam the debug info with errors
     }
-
-    // Call this in your detectPose function
-    updatePerformanceStats();
 }
 
 // Ajouter cette fonction pour mettre à jour l'indicateur de volume
