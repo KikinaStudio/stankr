@@ -2062,8 +2062,15 @@ async function detectPose() {
                 // Appliquer le volume à toutes les pistes
                 Object.values(tracks).forEach(track => {
                     if (track.gainNode) {
-                        const baseVolume = parseInt(document.getElementById(`volume-slider-${track.name}`).value) / 100;
-                        track.gainNode.gain.value = baseVolume * globalVolume;
+                        // Check if the volume slider exists before accessing its value
+                        const volumeSlider = document.getElementById(`volume-slider-${track.name}`);
+                        if (volumeSlider) {
+                            const baseVolume = parseInt(volumeSlider.value) / 100;
+                            track.gainNode.gain.value = baseVolume * globalVolume;
+                        } else {
+                            // If slider doesn't exist, use default volume
+                            track.gainNode.gain.value = globalVolume;
+                        }
                     }
                 });
                 
