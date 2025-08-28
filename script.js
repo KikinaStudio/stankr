@@ -746,19 +746,23 @@ function createExpressionControls() {
                     if (expressionName === 'happy') {
                         happyMode = 'neutral';
                         happyEffect = effectName;
-                        showStatus(`Mode sourire: ${effectDescriptions[effectName]} sur ${trackSelect.value}`);
+                        const trackName = trackSelect ? trackSelect.value : 'piste sélectionnée';
+                        showStatus(`Mode sourire: ${effectDescriptions[effectName]} sur ${trackName}`);
                     } else if (expressionName === 'sad') {
                         sadMode = 'neutral';
                         sadEffect = effectName;
-                        showStatus(`Mode tristesse: ${effectDescriptions[effectName]} sur ${trackSelect.value}`);
+                        const trackName = trackSelect ? trackSelect.value : 'piste sélectionnée';
+                        showStatus(`Mode tristesse: ${effectDescriptions[effectName]} sur ${trackName}`);
                     } else if (expressionName === 'angry') {
                         angryMode = 'neutral';
                         angryEffect = effectName;
-                        showStatus(`Mode colère: ${effectDescriptions[effectName]} sur ${trackSelect.value}`);
+                        const trackName = trackSelect ? trackSelect.value : 'piste sélectionnée';
+                        showStatus(`Mode colère: ${effectDescriptions[effectName]} sur ${trackName}`);
                     } else if (expressionName === 'surprise') {
                         surpriseMode = 'neutral';
                         surpriseEffect = effectName;
-                        showStatus(`Mode surprise: ${effectDescriptions[effectName]} sur ${trackSelect.value}`);
+                        const trackName = trackSelect ? trackSelect.value : 'piste sélectionnée';
+                        showStatus(`Mode surprise: ${effectDescriptions[effectName]} sur ${trackName}`);
                     }
                 }
                 
@@ -1731,13 +1735,21 @@ function updateTracksBasedOnExpression(expression) {
     const trackNames = Object.keys(tracks);
     
     // D'abord, réinitialiser tous les volumes et effets
-        trackNames.forEach(name => {
-            if (tracks[name]) {
-            // Réinitialiser le volume
-                const slider = document.getElementById(`volume-slider-${name}`);
+    trackNames.forEach(name => {
+        if (tracks[name]) {
+            // Réinitialiser le volume - avec vérification de l'existence des éléments
+            const slider = document.getElementById(`volume-slider-${name}`);
+            const volumeLabel = document.getElementById(`volume-${name}`);
+            
+            if (slider) {
                 slider.value = 100;
-                document.getElementById(`volume-${name}`).textContent = "100%";
+            }
+            if (volumeLabel) {
+                volumeLabel.textContent = "100%";
+            }
+            if (tracks[name].gainNode) {
                 tracks[name].gainNode.gain.value = 1.0;
+            }
             
             // Réinitialiser les effets si nécessaire
             if (tracks[name].currentEffect !== 'None') {
@@ -1761,20 +1773,26 @@ function updateTracksBasedOnExpression(expression) {
             // Muter une piste spécifique
             if (tracks[happyMuteTrack]) {
                 const slider = document.getElementById(`volume-slider-${happyMuteTrack}`);
-                slider.value = 0;
-                document.getElementById(`volume-${happyMuteTrack}`).textContent = "0%";
-                tracks[happyMuteTrack].gainNode.gain.value = 0;
+                const volumeLabel = document.getElementById(`volume-${happyMuteTrack}`);
+                if (slider) slider.value = 0;
+                if (volumeLabel) volumeLabel.textContent = "0%";
+                if (tracks[happyMuteTrack].gainNode) {
+                    tracks[happyMuteTrack].gainNode.gain.value = 0;
+                }
             }
         } else if (happyMode === 'solo') {
             // Jouer une seule piste spécifique
-    trackNames.forEach(name => {
+            trackNames.forEach(name => {
                 if (tracks[name] && name !== happyMuteTrack) {
-            const slider = document.getElementById(`volume-slider-${name}`);
-            slider.value = 0;
-            document.getElementById(`volume-${name}`).textContent = "0%";
-            tracks[name].gainNode.gain.value = 0;
-        }
-    });
+                    const slider = document.getElementById(`volume-slider-${name}`);
+                    const volumeLabel = document.getElementById(`volume-${name}`);
+                    if (slider) slider.value = 0;
+                    if (volumeLabel) volumeLabel.textContent = "0%";
+                    if (tracks[name].gainNode) {
+                        tracks[name].gainNode.gain.value = 0;
+                    }
+                }
+            });
         } else if (happyEffect !== 'None') {
             // Appliquer un effet à la piste sélectionnée
             if (tracks[happyMuteTrack]) {
@@ -1786,18 +1804,24 @@ function updateTracksBasedOnExpression(expression) {
             // Muter une piste spécifique
             if (tracks[sadMuteTrack]) {
                 const slider = document.getElementById(`volume-slider-${sadMuteTrack}`);
-                slider.value = 0;
-                document.getElementById(`volume-${sadMuteTrack}`).textContent = "0%";
-                tracks[sadMuteTrack].gainNode.gain.value = 0;
+                const volumeLabel = document.getElementById(`volume-${sadMuteTrack}`);
+                if (slider) slider.value = 0;
+                if (volumeLabel) volumeLabel.textContent = "0%";
+                if (tracks[sadMuteTrack].gainNode) {
+                    tracks[sadMuteTrack].gainNode.gain.value = 0;
+                }
             }
         } else if (sadMode === 'solo') {
             // Jouer une seule piste spécifique
             trackNames.forEach(name => {
                 if (tracks[name] && name !== sadMuteTrack) {
                     const slider = document.getElementById(`volume-slider-${name}`);
-                    slider.value = 0;
-                    document.getElementById(`volume-${name}`).textContent = "0%";
-                    tracks[name].gainNode.gain.value = 0;
+                    const volumeLabel = document.getElementById(`volume-${name}`);
+                    if (slider) slider.value = 0;
+                    if (volumeLabel) volumeLabel.textContent = "0%";
+                    if (tracks[name].gainNode) {
+                        tracks[name].gainNode.gain.value = 0;
+                    }
                 }
             });
         } else if (sadEffect !== 'None') {
@@ -1811,18 +1835,24 @@ function updateTracksBasedOnExpression(expression) {
             // Muter une piste spécifique
             if (tracks[angryTrack]) {
                 const slider = document.getElementById(`volume-slider-${angryTrack}`);
-                slider.value = 0;
-                document.getElementById(`volume-${angryTrack}`).textContent = "0%";
-                tracks[angryTrack].gainNode.gain.value = 0;
+                const volumeLabel = document.getElementById(`volume-${angryTrack}`);
+                if (slider) slider.value = 0;
+                if (volumeLabel) volumeLabel.textContent = "0%";
+                if (tracks[angryTrack].gainNode) {
+                    tracks[angryTrack].gainNode.gain.value = 0;
+                }
             }
         } else if (angryMode === 'solo') {
             // Jouer une seule piste spécifique
             trackNames.forEach(name => {
                 if (tracks[name] && name !== angryTrack) {
                     const slider = document.getElementById(`volume-slider-${name}`);
-                    slider.value = 0;
-                    document.getElementById(`volume-${name}`).textContent = "0%";
-                    tracks[name].gainNode.gain.value = 0;
+                    const volumeLabel = document.getElementById(`volume-${name}`);
+                    if (slider) slider.value = 0;
+                    if (volumeLabel) volumeLabel.textContent = "0%";
+                    if (tracks[name].gainNode) {
+                        tracks[name].gainNode.gain.value = 0;
+                    }
                 }
             });
         } else if (angryEffect !== 'None') {
@@ -1836,18 +1866,24 @@ function updateTracksBasedOnExpression(expression) {
             // Muter une piste spécifique
             if (tracks[surpriseTrack]) {
                 const slider = document.getElementById(`volume-slider-${surpriseTrack}`);
-                slider.value = 0;
-                document.getElementById(`volume-${surpriseTrack}`).textContent = "0%";
-                tracks[surpriseTrack].gainNode.gain.value = 0;
+                const volumeLabel = document.getElementById(`volume-${surpriseTrack}`);
+                if (slider) slider.value = 0;
+                if (volumeLabel) volumeLabel.textContent = "0%";
+                if (tracks[surpriseTrack].gainNode) {
+                    tracks[surpriseTrack].gainNode.gain.value = 0;
+                }
             }
         } else if (surpriseMode === 'solo') {
             // Jouer une seule piste spécifique
             trackNames.forEach(name => {
                 if (tracks[name] && name !== surpriseTrack) {
                     const slider = document.getElementById(`volume-slider-${name}`);
-                    slider.value = 0;
-                    document.getElementById(`volume-${name}`).textContent = "0%";
-                    tracks[name].gainNode.gain.value = 0;
+                    const volumeLabel = document.getElementById(`volume-${name}`);
+                    if (slider) slider.value = 0;
+                    if (volumeLabel) volumeLabel.textContent = "0%";
+                    if (tracks[name].gainNode) {
+                        tracks[name].gainNode.gain.value = 0;
+                    }
                 }
             });
         } else if (surpriseEffect !== 'None') {
