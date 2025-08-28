@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facial Expression Music Player</title>
-    <!-- Face API - using the original CDN source with version parameter to prevent caching -->
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js?v=1"></script>
+    <title>K.Lab : Face the music</title>
+    
+    <!-- Load TensorFlow.js first -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@0.0.6"></script>
+    
+    <!-- Then load Face API -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js?v=1"></script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
