@@ -59,6 +59,22 @@ let lastRightWristY = null;
 let globalVolume = 1.0;
 let isPoseDetectionActive = false;
 
+// Add performance monitoring
+let frameCount = 0;
+let lastTime = performance.now();
+
+function updatePerformanceStats() {
+    frameCount++;
+    const currentTime = performance.now();
+    
+    if (currentTime - lastTime >= 1000) {
+        const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+        console.log(`Pose detection FPS: ${fps}`);
+        frameCount = 0;
+        lastTime = currentTime;
+    }
+}
+
 // Initialize when the page loads
 window.addEventListener('load', init);
 
@@ -2118,6 +2134,9 @@ async function detectPose() {
         console.error("Erreur lors de la détection de pose:", error);
         updateDebugInfo(`Erreur de détection de pose: ${error.message}`);
     }
+
+    // Call this in your detectPose function
+    updatePerformanceStats();
 }
 
 // Ajouter cette fonction pour mettre à jour l'indicateur de volume
