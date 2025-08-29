@@ -1,4 +1,4 @@
-// Initialize audio context
+// Initialize audio context 
 let audioContext;
 let tracks = {};
 let isPlaying = false;
