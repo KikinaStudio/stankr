@@ -1,4 +1,4 @@
-// Initialize audio context 
+// Initialize audio context
 let audioContext;
 let tracks = {};
 let isPlaying = false;
@@ -58,6 +58,10 @@ let poseDetectionInterval;
 let lastRightWristY = null;
 let globalVolume = 1.0;
 let isPoseDetectionActive = false;
+
+// Visibility/performance flags
+const SHOW_CAMERA_PREVIEW = false;   // hide camera preview but keep detection
+const ENABLE_POSE_VOLUME   = false;  // disable pose-based volume control
 
 // Add performance monitoring
 let frameCount = 0;
@@ -1299,11 +1303,11 @@ function openCamera() {
     
     if (!modelsLoaded) {
             loadFaceApiModels().then(() => {
-                initPoseDetection();
+                if (ENABLE_POSE_VOLUME) initPoseDetection();
             });
     } else {
             setupCamera().then(() => {
-                initPoseDetection();
+                if (ENABLE_POSE_VOLUME) initPoseDetection();
             });
         }
     });
@@ -1495,11 +1499,17 @@ async function setupCamera() {
     
     console.log("Setting up camera...");
     
-    // Make video visible during debugging
-    video.style.display = 'block';
-    video.style.position = 'absolute';
-    video.style.opacity = '0.5';
-    video.style.zIndex = '1';
+    // Hide or show preview depending on flag
+    if (SHOW_CAMERA_PREVIEW) {
+        video.style.display = 'block';
+        video.style.position = 'absolute';
+        video.style.opacity = '0.5';
+        video.style.zIndex = '1';
+        canvas.style.display = 'block';
+    } else {
+        video.style.display = 'none';
+        canvas.style.display = 'none';
+    }
     
     try {
         // Request camera access
@@ -1571,13 +1581,13 @@ async function detectFacialExpression() {
     console.log("Starting face detection...");
     
     try {
-        // First, ensure video is visible in the canvas
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "#e0e0e0"; // Light gray background
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw current video frame to canvas
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // First, optionally draw preview
+        if (SHOW_CAMERA_PREVIEW) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = "#e0e0e0"; // Light gray background
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
         
         // Add indicator that detection is active
         const statusElement = document.getElementById('expressionStatus');
@@ -1602,9 +1612,11 @@ async function detectFacialExpression() {
                 console.log("No faces detected in frame");
                 statusElement.textContent = "No face detected - position your face in view";
                 statusElement.style.backgroundColor = "";
-                context.font = "16px Arial";
-                context.fillStyle = "red";
-                context.fillText("No face detected", 10, 30);
+                if (SHOW_CAMERA_PREVIEW) {
+                    context.font = "16px Arial";
+                    context.fillStyle = "red";
+                    context.fillText("No face detected", 10, 30);
+                }
                 
                 currentExpression = 'none';
                 return;
@@ -1618,13 +1630,13 @@ async function detectFacialExpression() {
             
             console.log("Full detection completed, processing results...");
             
-            // Redraw video frame (clear previous drawings)
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Draw face detection results on canvas
-            window.faceapi.draw.drawDetections(canvas, detections);
-            window.faceapi.draw.drawFaceLandmarks(canvas, detections);
+            // Optionally draw detections/landmarks
+            if (SHOW_CAMERA_PREVIEW) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                window.faceapi.draw.drawDetections(canvas, detections);
+                window.faceapi.draw.drawFaceLandmarks(canvas, detections);
+            }
             
             // Store previous expression to detect changes
             let previousExpression = currentExpression;
@@ -2012,6 +2024,7 @@ function formatTime(timeInSeconds) {
 
 // Ajouter cette fonction pour initialiser le détecteur de pose
 async function initPoseDetection() {
+    if (!ENABLE_POSE_VOLUME) return;
     try {
         updateDebugInfo("Initialisation de la détection de pose...");
         
@@ -2059,6 +2072,7 @@ async function initPoseDetection() {
 
 // Optimized pose detection function
 async function detectPose() {
+    if (!ENABLE_POSE_VOLUME) return;
     if (!isPoseDetectionActive || !poseDetector || !video || video.readyState < 2) return;
 
     try {
